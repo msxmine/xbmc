@@ -3689,6 +3689,11 @@ bool CVideoPlayer::OpenAudioStream(CDVDStreamInfo& hint, bool reset)
 
 bool CVideoPlayer::OpenVideoStream(CDVDStreamInfo& hint, bool reset)
 {
+  if (m_pInputStream){
+    if ((m_pInputStream->GetProperty("forceSoftwareDecoding")).asBoolean()){
+      hint.codecOptions |= CODEC_FORCE_SOFTWARE;
+    }
+  }
   if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
   {
     /* set aspect ratio as requested by navigator for dvd's */
@@ -3702,6 +3707,7 @@ bool CVideoPlayer::OpenVideoStream(CDVDStreamInfo& hint, bool reset)
   }
   else if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_PVRMANAGER))
   {
+    hint.codecOptions |= CODEC_FORCE_SOFTWARE;
     // set framerate if not set by demuxer
     if (hint.fpsrate == 0 || hint.fpsscale == 0)
     {
